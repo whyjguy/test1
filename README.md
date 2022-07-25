@@ -1,4 +1,4 @@
-# test1
+# Instructions for updates and build
 
 Test1\flask> docker build --no-cache -t whyjguy/flask .
 
