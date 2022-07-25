@@ -1,0 +1,28 @@
+version: "3.7"
+
+services:
+  watchtower:
+      image: containrrr/watchtower
+      container_name: watchtower
+      volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
+      environment:
+        - TZ=America/Denver
+        - WATCHTOWER_CLEANUP=true
+      restart: unless-stopped
+      command: --interval 10
+  flask:
+    image: whyjguy/flask
+    container_name: flask
+    restart: always
+    environment:
+      - APP_NAME=app
+    expose:
+      - 8080
+
+  nginx:
+    image: whyjguy/nginx
+    container_name: nginx
+    restart: always
+    ports:
+      - "80:80"
