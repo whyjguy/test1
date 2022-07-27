@@ -1,22 +1,53 @@
 version: "3.7"
 
 services:
+
+  database:
+    container_name: postgres
+    image: postgres:latest
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=database
+    restart: always
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@pgadmin.com
+      PGADMIN_DEFAULT_PASSWORD: pgadmin
+      PGADMIN_LISTEN_PORT: 80
+    ports:
+      - 15432:80
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+    depends_on:
+      - database
+
   watchtower:
-      image: containrrr/watchtower
-      container_name: watchtower
-      volumes:
-        - /var/run/docker.sock:/var/run/docker.sock
-      environment:
-        - TZ=America/Denver
-        - WATCHTOWER_CLEANUP=true
-      restart: unless-stopped
-      command: --interval 10
+    image: containrrr/watchtower
+    container_name: watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - TZ=America/Denver
+      - WATCHTOWER_CLEANUP=true
+    restart: unless-stopped
+    command: --interval 10
+
   flask:
     image: whyjguy/flask
     container_name: flask
     restart: always
     environment:
       - APP_NAME=app
+    depends_on:
+      - database
     expose:
       - 8080
 
@@ -26,3 +57,8 @@ services:
     restart: always
     ports:
       - "80:80"
+
+
+
+volumes:
+  postgres-data:
